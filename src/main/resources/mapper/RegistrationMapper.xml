@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.marathon.mapper.RegistrationMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO registration (user_id, event_id, real_name, id_card, shirt_size, emergency_contact, status)
+        VALUES (#{userId}, #{eventId}, #{realName}, #{idCard}, #{shirtSize}, #{emergencyContact}, 0)
+    </insert>
+
+    <update id="updateStatus">
+        UPDATE registration SET status = #{status} WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultType="com.marathon.entity.Registration">
+        SELECT * FROM registration WHERE id = #{id}
+    </select>
+
+    <select id="selectByUserId" resultType="com.marathon.entity.Registration">
+        SELECT r.*, e.name AS event_name
+        FROM registration r
+                 LEFT JOIN event e ON r.event_id = e.id
+        WHERE r.user_id = #{userId}
+        ORDER BY r.apply_time DESC
+    </select>
+
+    <select id="selectAll" resultType="com.marathon.entity.Registration">
+        SELECT r.*, u.username, e.name AS event_name
+        FROM registration r
+        LEFT JOIN user u ON r.user_id = u.id
+        LEFT JOIN event e ON r.event_id = e.id
+        WHERE 1=1
+        <if test="eventId != null">
+            AND r.event_id = #{eventId}
+        </if>
+        <if test="status != null">
+            AND r.status = #{status}
+        </if>
+        ORDER BY r.apply_time DESC
+    </select>
+
+    <select id="countByEventId" resultType="int">
+        SELECT COUNT(*) FROM registration WHERE event_id = #{eventId} AND status = 1
+    </select>
+
+    <select id="countByUserAndEvent" resultType="int">
+        SELECT COUNT(*)
+        FROM registration
+        WHERE user_id = #{userId}
+          AND event_id = #{eventId}
+          AND status != 3
+    </select>
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.marathon.mapper.FavoriteMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO favorite (user_id, event_id) VALUES (#{userId}, #{eventId})
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM favorite WHERE user_id = #{userId} AND event_id = #{eventId}
+    </delete>
+
+    <select id="selectByUserId" resultType="com.marathon.entity.Favorite">
+        SELECT f.*, e.name AS event_name, e.location AS event_location, e.event_date
+        FROM favorite f
+                 LEFT JOIN event e ON f.event_id = e.id
+        WHERE f.user_id = #{userId}
+        ORDER BY f.create_time DESC
+    </select>
+
+    <select id="selectByUserAndEvent" resultType="com.marathon.entity.Favorite">
+        SELECT * FROM favorite WHERE user_id = #{userId} AND event_id = #{eventId}
+    </select>
+</mapper>

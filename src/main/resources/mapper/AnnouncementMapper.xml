@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.marathon.mapper.AnnouncementMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO announcement (title, content, publisher_id)
+        VALUES (#{title}, #{content}, #{publisherId})
+    </insert>
+
+    <update id="update">
+        UPDATE announcement
+        SET title = #{title}, content = #{content}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM announcement WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" resultType="com.marathon.entity.Announcement">
+        SELECT a.*, u.real_name AS publisher_name
+        FROM announcement a
+                 LEFT JOIN user u ON a.publisher_id = u.id
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="selectAll" resultType="com.marathon.entity.Announcement">
+        SELECT a.*, u.real_name AS publisher_name
+        FROM announcement a
+                 LEFT JOIN user u ON a.publisher_id = u.id
+        ORDER BY a.publish_time DESC
+    </select>
+    <select id="selectPage" resultType="com.marathon.entity.Announcement">
+        SELECT a.*, u.real_name AS publisher_name
+        FROM announcement a
+                 LEFT JOIN user u ON a.publisher_id = u.id
+        ORDER BY a.publish_time DESC
+            LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM announcement
+    </select>
+</mapper>
